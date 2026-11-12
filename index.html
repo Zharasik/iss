@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Оқу практикасы квесттері</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Fira+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Квест-платформа: сол жақта сабақ мазмұны, оң жақта жабысқақ XP панелі; телефонда бір баған */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #17233b;
+  --muted: #5b6780;
+  --line: #d9dfea;
+  --accent: #0f766e;
+  --accent-soft: #d8f1ee;
+  --gold: #b7791f;
+  --gold-soft: #fbefd9;
+  --ok: #15803d;
+  --bad: #b91c1c;
+  --bad-soft: #fde4e4;
+  --code: #eef1f6;
+  --font-display: "Rubik", "Segoe UI", Arial, sans-serif;
+  --font-body: "Fira Sans", "Segoe UI", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1524; --surface: #172136; --ink: #e8edf7; --muted: #9aa7c0; --line: #2a3752;
+    --accent: #2dd4bf; --accent-soft: #123a3a; --gold: #f6c453; --gold-soft: #3a2f16;
+    --ok: #4ade80; --bad: #f87171; --bad-soft: #3b1d22; --code: #0b1120; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1524; --surface: #172136; --ink: #e8edf7; --muted: #9aa7c0; --line: #2a3752;
+  --accent: #2dd4bf; --accent-soft: #123a3a; --gold: #f6c453; --gold-soft: #3a2f16;
+  --ok: #4ade80; --bad: #f87171; --bad-soft: #3b1d22; --code: #0b1120; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--font-body); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; }
+button, input { font: inherit; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+code, pre { font-family: var(--font-mono); font-size: 0.86rem; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
+  padding: 12px clamp(16px, 4vw, 40px); background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+.brand { font-family: var(--font-display); font-weight: 700; color: var(--accent); }
+.brand small { display: block; font: 500 0.8rem var(--font-body); color: var(--muted); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab { border: 1px solid var(--line); background: transparent; color: var(--ink); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.who { display: flex; gap: 8px; align-items: center; }
+.who label { color: var(--muted); font-size: 0.9rem; }
+.who input { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 7px 10px; width: 210px; }
+
+.wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; padding: 24px clamp(16px, 4vw, 40px) 60px; max-width: 1240px; margin: 0 auto; }
+@media (max-width: 920px) { .wrap { grid-template-columns: 1fr; } .side { position: static !important; } }
+main { display: grid; gap: 26px; min-width: 0; }
+.eyebrow { color: var(--gold); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.hero { display: grid; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--accent-soft); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: 0.9rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 12px; }
+.story { border-left: 5px solid var(--gold); background: var(--gold-soft); }
+video { width: 100%; border-radius: 12px; background: #000; display: block; }
+details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.transcript { max-height: 260px; overflow: auto; display: grid; gap: 6px; margin-top: 10px; font-size: 0.93rem; }
+.transcript span { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; margin-right: 8px; }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.rule { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface); display: grid; gap: 4px; }
+.rule b { font-family: var(--font-display); }
+.rule p { color: var(--muted); font-size: 0.92rem; }
+
+.missions { display: grid; gap: 12px; }
+.mission { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.mission.done { border-color: var(--ok); }
+.num { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--gold-soft); color: var(--gold); font: 700 1.2rem var(--font-display); }
+.mission.done .num { background: var(--ok); color: var(--surface); }
+.mhead { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; }
+.pill { border-radius: 999px; padding: 2px 10px; border: 1px solid var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+.pill.xp { border-color: var(--gold); color: var(--gold); font-weight: 600; }
+.mbody { display: grid; gap: 8px; }
+.cmd { position: relative; background: var(--code); border-radius: 10px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 0; }
+.check { color: var(--muted); font-size: 0.92rem; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--accent); background: transparent; color: var(--accent); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.btn.solid { background: var(--accent); color: var(--surface); }
+.btn:hover { filter: brightness(1.08); }
+.timer { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; }
+
+.incident { border: 2px dashed var(--bad); background: var(--bad-soft); }
+.incident.open { border-style: solid; }
+.count { font: 700 2rem var(--font-mono); color: var(--bad); font-variant-numeric: tabular-nums; }
+
+.quiz { display: grid; gap: 14px; }
+.q { display: grid; gap: 6px; }
+.q fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 4px; }
+.q legend { font-weight: 600; margin-bottom: 4px; }
+.opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+.opt:hover { background: var(--bg); }
+.opt.right { background: var(--accent-soft); }
+.opt.wrong { background: var(--bad-soft); }
+.result { font-weight: 600; }
+
+.side { position: sticky; top: 84px; align-self: start; display: grid; gap: 14px; }
+.meter { display: grid; gap: 8px; }
+.big { font: 700 2.6rem var(--font-display); font-variant-numeric: tabular-nums; }
+.big small { font-size: 1rem; color: var(--muted); }
+.bar { height: 12px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); width: 0; transition: width .4s; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; font-size: 0.85rem; color: var(--muted); cursor: pointer; background: transparent; }
+.badge[aria-pressed="true"] { border-color: var(--gold); background: var(--gold-soft); color: var(--ink); font-weight: 600; }
+.list { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.note { color: var(--muted); font-size: 0.88rem; }
+.toast { min-height: 1.4em; color: var(--ok); font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">Оқу практикасы · квесттер<small>Алматы экономикалық колледжі · ИС 3-1</small></div>
+  <nav class="tabs" role="tablist" aria-label="Сабақтар">
+    <button class="tab" role="tab" id="tab-lesson-2" data-id="lesson-2">№2 Легаси жүйелер</button>
+    <button class="tab" role="tab" id="tab-lesson-3" data-id="lesson-3">№3 Сақтық көшірме</button>
+  </nav>
+  <div class="who"><label for="student">Аты-жөні, жұп:</label><input id="student" placeholder="Мысалы: Айбек, Дана (2-жұп)"></div>
+</header>
+
+<div class="wrap">
+  <main id="main"></main>
+  <aside class="side" aria-label="Прогресс">
+    <section class="card meter">
+      <h3>Жиналған XP</h3>
+      <div class="big" id="xp">0 <small>/ 100</small></div>
+      <div class="bar" aria-hidden="true"><i id="xpbar"></i></div>
+      <p class="note" id="xpnote">Миссияны орындаған соң «Орындадық» батырмасын басыңыз. Қорғау (10 XP) — оқытушымен.</p>
+    </section>
+    <section class="card">
+      <h3>Бейдждер</h3>
+      <div class="badges" id="badges"></div>
+      <p class="note">Бейджді оқытушы береді: басып белгілеңіз.</p>
+    </section>
+    <section class="card">
+      <h3>Нәтижені тапсыру</h3>
+      <p class="note">Есеп мәтінін көшіріп, Google Classroom-ға (немесе оқытушы көрсеткен жерге) скриншоттармен бірге жіберіңіз.</p>
+      <div class="row">
+        <button class="btn solid" id="copy">Есеп мәтінін көшіру</button>
+        <button class="btn" id="savetxt" hidden>Файл ретінде сақтау</button>
+      </div>
+      <div class="toast" id="toast" role="status"></div>
+    </section>
+  </aside>
+</div>
+
+<script src="data.js"></script>
+<script>
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let current = "lesson-2";
+let downloads = null;
+const timers = {};
+let incidentTimer = null;
+
+function state(id) { return store.get("q-" + id, { done: [], defense: false, badges: [], quiz: null, times: {} }); }
+function save(id, s) { store.set("q-" + id, s); }
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+
+function render() {
+  const L = LESSONS[current];
+  const s = state(current);
+  document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.id === current)));
+  const m = document.getElementById("main");
+  m.innerHTML = `
+  <section class="hero">
+    <div class="eyebrow">Практикалық жұмыс №${L.n} · квест «${esc(L.quest)}»</div>
+    <h1>${esc(L.title)}</h1>
+    <div class="chips">${L.outcomes.map((o) => `<span class="chip">${esc(o)}</span>`).join("")}</div>
+  </section>
+
+  <section class="card">
+    <h2>Бейне-нұсқаулық (${L.minutes} мин)</h2>
+    <video controls preload="metadata" src="${L.video}"></video>
+    <details><summary>Бейненің мәтінін көрсету</summary>
+      <div class="transcript">${L.transcript.map(([t, x]) => `<p><span>${t}</span>${esc(x)}</p>`).join("")}</div>
+    </details>
+  </section>
+
+  <section class="card story"><h2>Сюжет</h2><p>${esc(L.story)}</p></section>
+
+  <section class="rules" aria-label="Ойын ережесі">
+    <div class="rule"><b>Пилот және Штурман</b><p>Пилот команда жазады, Штурман нұсқаулықты оқып, нәтижені тексереді. Әр миссиядан кейін рөл ауысады.</p></div>
+    <div class="rule"><b>XP = бағалау ұпайы</b><p>6 миссия 90 XP береді, қорғау — 10 XP. Барлығы 100.</p></div>
+    <div class="rule"><b>Инцидент-карта</b><p>Сабақ ортасында оқытушы апат жариялайды. Тез шешкен жұпқа +5 бонус XP.</p></div>
+    <div class="rule"><b>Файлдар</b><p>Бастапқы қалта: <code>${L.folder}</code>. Толық нұсқаулық — Word файлда (оқытушы береді).</p></div>
+  </section>
+
+  <section class="card">
+    <h2>Жылдам старт: 5 сұрақ</h2>
+    <form class="quiz" id="quiz">
+      ${L.quiz.map((q, i) => `<div class="q"><fieldset><legend>${i + 1}. ${esc(q.q)}</legend>
+        ${q.a.map((a, j) => `<label class="opt" id="o-${i}-${j}"><input type="radio" name="q${i}" id="r-${i}-${j}" value="${j}"> <span>${esc(a)}</span></label>`).join("")}
+      </fieldset></div>`).join("")}
+      <div class="row"><button class="btn solid" type="submit">Тексеру</button><span class="result" id="qres">${s.quiz === null ? "" : `Нәтиже: ${s.quiz} / 5`}</span></div>
+    </form>
+  </section>
+
+  <section>
+    <h2 style="margin-bottom:12px">Миссиялар</h2>
+    <div class="missions">
+    ${L.missions.map((x, i) => `
+      <article class="mission ${s.done.includes(i) ? "done" : ""}" id="m-${i}">
+        <div class="num">${i + 1}</div>
+        <div class="mbody">
+          <div class="mhead"><h3>${esc(x.name)}</h3>
+            <div class="meta"><span class="pill">${x.time} мин</span><span class="pill xp">${x.xp} XP</span></div></div>
+          <p>${esc(x.goal)}</p>
+          ${x.cmd ? `<pre class="cmd">${esc(x.cmd)}</pre>` : ""}
+          <p class="check">Тексеру: ${esc(x.check)}</p>
+          <div class="row">
+            <button class="btn ${s.done.includes(i) ? "" : "solid"}" data-done="${i}">${s.done.includes(i) ? "Белгіні алу" : "Орындадық"}</button>
+            ${x.cmd ? `<button class="btn" data-copy="${i}">Команданы көшіру</button>` : ""}
+            <button class="btn" data-timer="${i}">${timers[i] ? "Таймерді тоқтату" : "Таймер"}</button>
+            <span class="timer" id="t-${i}">${fmt(s.times[i] || 0)}</span>
+          </div>
+        </div>
+      </article>`).join("")}
+      <article class="mission ${s.defense ? "done" : ""}">
+        <div class="num">7</div>
+        <div class="mbody"><div class="mhead"><h3>Қорғау және рефлексия</h3><div class="meta"><span class="pill xp">10 XP</span></div></div>
+          <p>Нәтижені экраннан көрсетіп, бақылау сұрақтарына жауап беру. «Бүгін мен ... білдім / ... орындай алдым / ... қиын болды».</p>
+          <div class="row"><button class="btn ${s.defense ? "" : "solid"}" id="defense">${s.defense ? "Белгіні алу" : "Қорғадық"}</button></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="card incident" id="incident">
+    <h2>Инцидент-карта</h2>
+    <p id="inc-text">Оқытушы белгі бергенде ашыңыз.</p>
+    <div class="row"><button class="btn solid" id="inc-open">Инцидентті ашу</button><span class="count" id="inc-count" hidden>10:00</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Есепке не тапсырасыз</h2>
+    <ul class="list">${L.report.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+    <p class="note">Толық нұсқаулық (Word, «${esc(L.fileName)}») және бастапқы қалта <code>${L.folder}</code> — оқытушы Google Classroom арқылы береді.</p>
+  </section>`;
+
+  const vid = m.querySelector("video");
+  // Бейдждер
+  const b = document.getElementById("badges");
+  b.innerHTML = L.badges.map((x) => `<button class="badge" aria-pressed="${s.badges.includes(x)}" data-badge="${esc(x)}">${esc(x)}</button>`).join("");
+  b.onclick = (e) => {
+    const k = e.target.dataset.badge; if (!k) return;
+    const st = state(current);
+    st.badges = st.badges.includes(k) ? st.badges.filter((y) => y !== k) : [...st.badges, k];
+    save(current, st); render();
+  };
+  m.onclick = onMainClick;
+  document.getElementById("quiz").onsubmit = onQuiz;
+  updateXP();
+}
+
+function updateXP() {
+  const L = LESSONS[current], s = state(current);
+  const xp = s.done.reduce((a, i) => a + L.missions[i].xp, 0) + (s.defense ? 10 : 0);
+  document.getElementById("xp").innerHTML = `${xp} <small>/ 100</small>`;
+  document.getElementById("xpbar").style.width = xp + "%";
+  return xp;
+}
+
+function onMainClick(e) {
+  const t = e.target.closest("button"); if (!t) return;
+  const st = state(current);
+  if (t.dataset.done !== undefined) {
+    const i = +t.dataset.done;
+    st.done = st.done.includes(i) ? st.done.filter((x) => x !== i) : [...st.done, i];
+    save(current, st); render();
+  } else if (t.id === "defense") {
+    st.defense = !st.defense; save(current, st); render();
+  } else if (t.dataset.copy !== undefined) {
+    copyText(LESSONS[current].missions[+t.dataset.copy].cmd, "Команда көшірілді");
+  } else if (t.dataset.timer !== undefined) {
+    const i = +t.dataset.timer;
+    if (timers[i]) { clearInterval(timers[i]); delete timers[i]; t.textContent = "Таймер"; return; }
+    t.textContent = "Таймерді тоқтату";
+    timers[i] = setInterval(() => {
+      const s2 = state(current); s2.times[i] = (s2.times[i] || 0) + 1; save(current, s2);
+      const el = document.getElementById("t-" + i); if (el) el.textContent = fmt(s2.times[i]);
+    }, 1000);
+  } else if (t.id === "inc-open") {
+    document.getElementById("incident").classList.add("open");
+    document.getElementById("inc-text").textContent = LESSONS[current].incident;
+    const c = document.getElementById("inc-count"); c.hidden = false; t.hidden = true;
+    let left = 600; clearInterval(incidentTimer);
+    incidentTimer = setInterval(() => { left = Math.max(0, left - 1); c.textContent = fmt(left); if (!left) clearInterval(incidentTimer); }, 1000);
+  }
+}
+
+function onQuiz(e) {
+  e.preventDefault();
+  const L = LESSONS[current]; let score = 0;
+  L.quiz.forEach((q, i) => {
+    const pick = document.querySelector(`input[name="q${i}"]:checked`);
+    q.a.forEach((_, j) => document.getElementById(`o-${i}-${j}`).classList.remove("right", "wrong"));
+    document.getElementById(`o-${i}-${q.k}`).classList.add("right");
+    if (pick && +pick.value === q.k) score++;
+    else if (pick) document.getElementById(`o-${i}-${pick.value}`).classList.add("wrong");
+  });
+  const st = state(current); st.quiz = score; save(current, st);
+  document.getElementById("qres").textContent = `Нәтиже: ${score} / 5`;
+}
+
+function reportText() {
+  const L = LESSONS[current], s = state(current), who = document.getElementById("student").value.trim() || "(аты-жөні жазылмаған)";
+  const lines = [`Практикалық жұмыс №${L.n}: ${L.title}`, `Квест «${L.quest}»`, `Студент / жұп: ${who}`, `Күні: ${new Date().toLocaleString("kk-KZ")}`, "",
+    `XP: ${updateXP()} / 100`, `Жылдам тест: ${s.quiz === null ? "орындалмаған" : s.quiz + " / 5"}`, "", "Миссиялар:"];
+  L.missions.forEach((x, i) => lines.push(`  ${i + 1}. ${x.name} — ${s.done.includes(i) ? "орындалды" : "орындалмады"} (${x.xp} XP, уақыты ${fmt(s.times[i] || 0)})`));
+  lines.push(`  7. Қорғау — ${s.defense ? "иә" : "жоқ"}`, "", `Бейдждер: ${s.badges.length ? s.badges.join(", ") : "жоқ"}`);
+  return lines.join("\n");
+}
+function toast(t) { const el = document.getElementById("toast"); el.textContent = t; setTimeout(() => { if (el.textContent === t) el.textContent = ""; }, 3000); }
+async function copyText(t, msg) {
+  try { await navigator.clipboard.writeText(t); toast(msg); } catch (e) { toast("Көшіру мүмкін болмады: мәтінді қолмен белгілеп көшіріңіз"); }
+}
+async function saveFile() {
+  try {
+    const r = await fetch(LESSONS[current].file); const blob = await r.blob();
+    await downloads.save({ filename: LESSONS[current].fileName, data: blob }); toast("Файл сақталды");
+  } catch (e) { toast("Файл сақталмады: «Тапсырма парағын ашу» сілтемесін қолданыңыз"); }
+}
+
+document.getElementById("copy").onclick = () => copyText(reportText(), "Есеп мәтіні көшірілді");
+document.getElementById("savetxt").onclick = async () => {
+  try { await downloads.save({ filename: `Есеп_ПЖ${LESSONS[current].n}.txt`, data: new Blob([reportText()], { type: "text/plain" }) }); toast("Есеп сақталды"); }
+  catch (e) { toast("Сақталмады: «Есеп мәтінін көшіру» батырмасын қолданыңыз"); }
+};
+document.querySelectorAll(".tab").forEach((b) => b.onclick = () => { location.hash = b.dataset.id; });
+const nm = document.getElementById("student");
+nm.value = store.get("student", "");
+nm.oninput = () => store.set("student", nm.value);
+function route() { const h = location.hash.slice(1); current = LESSONS[h] ? h : "lesson-2"; Object.values(timers).forEach(clearInterval); for (const k in timers) delete timers[k]; render(); }
+window.addEventListener("hashchange", route);
+route();
+if (window.claude && claude.use) {
+  claude.use("downloads").then((d) => {
+    downloads = d;
+    document.getElementById("savetxt").hidden = !d;
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
